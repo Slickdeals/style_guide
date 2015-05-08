@@ -1,30 +1,27 @@
-Julian's Chef Style Guide
+Slickdeals Chef Style Guide
 =========================
 
-This project contains the Chef Style Guide that I use, and was based on the work we did at [SecondMarket](http://www.secondmarket.com/). Some of these rules are enforced by FoodCritic; some others are not.
-
-I have a talk entitled ["What Makes a Good Cookbook?"](https://www.youtube.com/watch?v=ILOW0Dm_ILQ&feature=youtu.be&t=1m58s) based on this material.
+This style guide is based of [Julian Dunn's Style guide](https://github.com/juliandunn/chef-style-guide), heavily edited to work for our workflow. Some of these rules are enforced by FoodCritic; some others are not.
 
 Git Etiquette
 -------------
 
 Although not strictly a Chef style thing, please always ensure your ``user.name`` and ``user.email`` are set properly in your ``.gitconfig``.
 
-By "properly", I mean that ``user.name`` is your given name (e.g., "Julian Dunn") and ``user.email`` is an actual, working e-mail address for you. It's annoying to see commit log entries from things like "guestuser &lt;login@Bobs-Macbook-Pro.local&gt;".
+By "properly", I mean that ``user.name`` is your given name (e.g., "Julian Dunn") and ``user.email`` is an actual, working e-mail address for you.
 
 Cookbook Naming
 ---------------
 
 * Avoid dashes in cookbook names. This is because any LWRPs you create will use the cookbook name as part of the LWRP name, so the methods become very awkward. In particular, since '-' can't be part of a symbol in Ruby, you won't be able to use LWRPs in any cookbooks with '-' in them.
-* All organization application cookbooks should be prefixed with a short organizational prefix, such as 'sm' for 'SecondMarket' (e.g. 'smpostgresql')
+* All wrapper cookbooks should be prefixed with a short organizational prefix and an underscore, such as 'sd_' for 'Slickdeals' (e.g. 'sd_postgresql' or 'sd_base_setupk')
 
 Cookbook Versioning
 -------------------
 
 * Use [semantic versioning](http://semver.org/) when numbering cookbooks.
 * Only upload stable cookbooks from master.
-* Only upload unstable cookbooks from the dev branch. Merge to master and bump the version when stable.
-* Always update CHANGELOG.md with any changes, with the JIRA ticket and a brief description.
+* Only upload unstable cookbooks to your own fork. Merge to master and bump the version when stable.
 
 System and Component Naming
 ---------------------------
@@ -36,14 +33,7 @@ Name things uniformly for their system and component. For the ganglia master,
 * role: `ganglia-master`
 * directories: `ganglia/master` (if specific to component), `ganglia` (if not). For example: `/var/log/ganglia/master`
 
-(The foregoing was shamelessly cribbed from Ironfan)
-
 Name attributes after the recipe in which they are primarily used. e.g. `node['postgresql']['server']`
-
-Default Recipe
---------------
-
-Don't use the default recipe (leave it blank). Instead, create recipes called `server` or `client` (or other).
 
 Resource Parameter Order
 ------------------------
@@ -63,7 +53,7 @@ Example:
       source 'foobar.txt.erb'
       owner  'someuser'
       group  'somegroup'
-      mode   00644
+      mode   0644
       variables(
         :foo => 'bar'
       )
@@ -74,7 +64,7 @@ Example:
 File Modes
 ----------
 
-Always specify all five digits of the file mode, and not as a string.
+Always specify all four digits of the file mode, and not as a string.
 
 Wrong:
 
@@ -82,7 +72,7 @@ Wrong:
 
 Right:
 
-    mode 00644
+    mode 0644
 
 Always Specify Action
 ---------------------
@@ -104,7 +94,7 @@ FoodCritic Linting
 
 It goes without saying that all cookbooks should pass FoodCritic rules before being uploaded.
 
-    $ foodcritic -f all your-cookbook
+    cookbook_directory$ foodcritic .
 
 should return nothing.
 
@@ -129,11 +119,9 @@ Use single-quoted strings in all situations where the string doesn't need interp
 Shelling Out
 ------------
 
-Always use `mixlib-shellout` to shell out. Never use backticks, Process.spawn, popen4,
-or anything else!
+Always use `mixlib-shellout` to shell out. Never use backticks, Process.spawn, popen4, or anything else!
 
-As of Chef Client 12 you can use `shell_out`, `shell_out!` and `shell_out_with_system_locale`
-directly in recipe DSL.
+As of Chef Client 12 you can use `shell_out`, `shell_out!` and `shell_out_with_system_locale` directly in recipe DSL.
 
 Constructs to Avoid
 -------------------
@@ -142,6 +130,32 @@ Constructs to Avoid
 * `node.set_unless` - Can lead to weird behavior if the node object had something set. Avoid unless altogether necessary (one example where it's necessary is in `node['postgresql']['server']['password']`)
 * `if node.run_list.include?('foo')` i.e. branching in recipes based on what's in the node's run list. Better and more readable to use a feature flag and set its precedence appropriately.
 * `node['foo']['bar']` i.e. setting normal attributes without specifying precedence. This is deprecated in Chef 11, so either use `node.set['foo']['bar']` to replace its precedence in-place or choose the precedence to suit.
+
+Tests
+-----
+* Unit and Integration tests should be written for all cookbooks.
+* All unit tests are written in ChefSpec/RSpec and all Test Kitchen tests are written in ServerSpec.
+* All tests should be runnable using a Rakefile. This rakefile should run test:quick by default (foodcritic, rubocop, and chefspec) and there should be a test:ci that runs Test Kitchen and then test:quick
+* All `rake test:ci` tests and coverage should return 100% should pass before incrementing the version number and/or pushing to master
+
+Templates
+---------
+Included with this Style Guide is a code_generator. When bootstrapping cookbooks, or files you use the chef command included in ChefDK.
+
+    chef generate XXXXX filename -g <this_repo>/code_generator
+
+All cookbooks should be bootstrapped with the following;
+```
+chef generate cookbook my_cookbook_name -g <this_repo>/code_generator
+cd my_cookbook_name
+git init . && git commit -m "Initial Commit"
+```
+
+All the following should be generated using `chef generate XXXX name -g <this_repo>/code_generator`
+* recipe
+* attribute
+* cookbook
+* lwrp
 
 Useful Links
 ------------
@@ -153,8 +167,10 @@ License and Authors
 -------------------
 
 * Author:: Julian C. Dunn (<jdunn@aquezada.com>)
+* Author:: David Aronsohn (<hipster@slickdeals.net>)
 * Copyright:: 2012-2013, SecondMarket Labs, LLC.
 * Copyright:: 2013-2014, Chef Software, Inc.
+* Copyright:: 2015, Slickdeals, LLC.
 
 ```text
 Licensed under the Apache License, Version 2.0 (the "License");
