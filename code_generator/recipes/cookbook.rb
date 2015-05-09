@@ -78,12 +78,19 @@ end
 
 # git
 if context.have_git
-  if !context.skip_git_init
+  execute("initialize-git") do
+    command("git init .")
+    cwd cookbook_dir
+  end
 
-    execute("initialize-git") do
-      command("git init .")
-      cwd cookbook_dir
-    end
+  execute("initialize-git") do
+    command("git add --all")
+    cwd cookbook_dir
+  end
+
+  execute("initialize-git") do
+    command("git commit -m 'Initial Commit'")
+    cwd cookbook_dir
   end
 
   cookbook_file "#{cookbook_dir}/.gitignore" do
