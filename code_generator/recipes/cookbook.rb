@@ -90,6 +90,10 @@ end
 
 # git
 if context.have_git
+  cookbook_file "#{cookbook_dir}/.gitignore" do
+    source "gitignore"
+  end
+
   execute("initialize-git") do
     command("git init .")
     cwd cookbook_dir
@@ -103,9 +107,5 @@ if context.have_git
   execute("initialize-git") do
     command("git commit -m 'Initial Commit'")
     cwd cookbook_dir
-  end
-
-  cookbook_file "#{cookbook_dir}/.gitignore" do
-    source "gitignore"
   end
 end
