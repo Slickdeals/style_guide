@@ -1,7 +1,7 @@
 Slickdeals Chef Style Guide
 =========================
 
-This style guide is based of [Julian Dunn's Style guide](https://github.com/juliandunn/chef-style-guide), heavily edited to work for our workflow. Some of these rules are enforced by FoodCritic; some others are not.
+This style guide is based off of [Julian Dunn's Style guide](https://github.com/juliandunn/chef-style-guide) yet heavily edited to work for our workflow.
 
 Git Etiquette
 -------------
@@ -131,22 +131,21 @@ Constructs to Avoid
 * `if node.run_list.include?('foo')` i.e. branching in recipes based on what's in the node's run list. Better and more readable to use a feature flag and set its precedence appropriately.
 * `node['foo']['bar']` i.e. setting normal attributes without specifying precedence. This is deprecated in Chef 11, so either use `node.set['foo']['bar']` to replace its precedence in-place or choose the precedence to suit.
 * `include Opscode::OpenSSL::Password` - Using include causes the different phases of the chef run to read this differently and can cause larger namespace clash issues. Use `::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)` and `::Chef::Resource::Nanme.send(:include, Opscode::OpenSSL::Password)` instead
-* `log` resource. Use `::Chef::Log.{warn,crit,info}` instead. This d
 
 Tests
 -----
 * Unit and Integration tests should be written for all cookbooks.
 * All unit tests are written in ChefSpec/RSpec and all Test Kitchen tests are written in ServerSpec.
-* All tests should be runnable using a Rakefile. This rakefile should run test:quick by default (foodcritic, rubocop, and chefspec) and there should be a test:ci that runs Test Kitchen and then test:quick
-* All `rake test:ci` tests and coverage should return 100% should pass before incrementing the version number and/or pushing to master
+* All tests should be runnable using a Rakefile. This rakefile should run test:quick by default (foodcritic, rubocop, and chefspec) and there should be a test:ci that runs Test Kitchen and then test:quick.
+* All `rake test:ci` tests should pass before incrementing the version number and/or pushing to master.
 
 Templates
 ---------
-Included with this Style Guide is a code_generator. When bootstrapping cookbooks, or files you use the chef command included in ChefDK.
+Included with this Style Guide is a code_generator. When bootstrapping cookbooks or files you use the chef command included in ChefDK.
 
     chef generate XXXXX filename -g <this_repo>/code_generator
 
-All the following should be generated this
+All the following should be generated with ChefDK
 * cookbook
 * recipe
 * attribute
