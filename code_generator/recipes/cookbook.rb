@@ -72,6 +72,12 @@ cookbook_file "#{cookbook_dir}/.rubocop.yml" do
   action :create_if_missing
 end
 
+# Rakefile for all testing
+cookbook_file "#{cookbook_dir}/Rakefile" do
+  source "Rakefile"
+  action :create_if_missing
+end
+
 # Recipes
 
 directory "#{cookbook_dir}/recipes"
