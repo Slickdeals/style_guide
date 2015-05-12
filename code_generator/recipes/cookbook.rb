@@ -66,6 +66,12 @@ template "#{cookbook_dir}/spec/unit/recipes/default_spec.rb" do
   action :create_if_missing
 end
 
+# Rubocop
+cookbook_file "#{cookbook_dir}/.rubocop.yml" do
+  source "rubocop.yml"
+  action :create_if_missing
+end
+
 # Recipes
 
 directory "#{cookbook_dir}/recipes"
