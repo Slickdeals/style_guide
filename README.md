@@ -155,6 +155,16 @@ If you want to avoid having to type the ` -g <this_repo>/code_generator` every t
 
     chefdk[:generator_cookbook] = "#{ENV['HOME']}/Code/sd_style_guide/code_generator" if defined? ChefDK::Configurable
 
+Rubocop
+-------
+Since readability is important and not everyone is a ruby programmer we use rubocop to help enforce some good style. It is not completely critical that rubocup style is met but for public cookbooks and other well treaded code should be tested.
+The template generator above has our default rubocop and will install it in all new cookbooks. The default rake file too will run rubocop as part of our quick tests.
+If you wish to install our default rubocop across your entire machine create the following symlink
+
+    ln -sf $(pwd)/code_generator/files/default/rubocop.yml ~/.rubocop.yml
+
+Having this installed for your user will augment, not overwrite cookbook specific rubocop files.
+
 Useful Links
 ------------
 
