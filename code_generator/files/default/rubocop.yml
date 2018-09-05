@@ -17,7 +17,7 @@ LineLength:
   Enabled: false
 
 # Allows for alignment of parameters
-SingleSpaceBeforeFirstArg:
+Layout/SpaceBeforeFirstArg:
   Enabled: false
 
 # Ruby 1.9 hashes ( key: 'value' instead of :key => 'value )
